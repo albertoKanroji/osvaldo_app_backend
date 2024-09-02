@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use App\Models\Familiar;
 
@@ -17,9 +18,10 @@ class FamiliarController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
         try {
+            $id = $request->input('id');
             $familiar = Familiar::findOrFail($id);
             return response()->json(['data' => $familiar, 'status' => 'success'], 200);
         } catch (\Exception $e) {
@@ -53,6 +55,17 @@ class FamiliarController extends Controller
         try {
             Familiar::findOrFail($id)->delete();
             return response()->json(['data' => 'Familiar eliminado', 'status' => 'success'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['data' => $e->getMessage(), 'status' => 'error'], 500);
+        }
+    }
+    public function getFamiliaresPorCliente(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $cliente = Cliente::findOrFail($id);
+            $familiares = $cliente->familiares; // Asumiendo que tienes una relación 'familiares' en el modelo Cliente
+            return response()->json(['data' => $familiares], 200);
         } catch (\Exception $e) {
             return response()->json(['data' => $e->getMessage(), 'status' => 'error'], 500);
         }
